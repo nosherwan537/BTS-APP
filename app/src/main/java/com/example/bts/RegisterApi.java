@@ -1,5 +1,6 @@
 package com.example.bts;
 import android.content.Context;
+import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -10,7 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RegisterApi {
-    private static final String BASE_URL = "http://192.168.18.41:5000/api/v1";
+    private static final String TAG = "RegisterApi";
+    private static final String BASE_URL = "http://192.168.10.4:5000/api/v1/register";
 
     private RequestQueue requestQueue;
     private Context context;
@@ -30,7 +32,10 @@ public class RegisterApi {
             e.printStackTrace();
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL + "/register", jsonBody,
+        // Log the request body
+        Log.d(TAG, "Request Body: " + jsonBody.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, BASE_URL, jsonBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -43,6 +48,8 @@ public class RegisterApi {
             }
         });
 
+        // Log that the request is being added to the queue
+        Log.d(TAG, "Adding request to queue");
         requestQueue.add(jsonObjectRequest);
     }
 

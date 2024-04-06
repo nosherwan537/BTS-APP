@@ -1,5 +1,6 @@
 package com.example.bts;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -64,8 +67,23 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
+                // Log the full error message
+                Log.e("Volley Error", "Registration failed with error: " + error.getMessage(), error);
+
                 // Handle registration error
-                Toast.makeText(RegisterActivity.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
+                String errorMessage = "Registration failed. Please try again.";
+                if (error.networkResponse != null && error.networkResponse.data != null) {
+                    try {
+                        String responseBody = new String(error.networkResponse.data, "utf-8");
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        errorMessage = jsonObject.getString("message");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
