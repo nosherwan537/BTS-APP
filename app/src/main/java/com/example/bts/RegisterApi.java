@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RegisterApi {
-    private static final String BASE_URL = "http://192.168.18.41:5000/api/v1";
+    private static final String BASE_URL = "http://localhost:5000/api/v1";
 
     private RequestQueue requestQueue;
     private Context context;
