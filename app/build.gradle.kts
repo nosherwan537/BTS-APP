@@ -56,6 +56,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx:20.1.0")
     implementation("com.google.firebase:firebase-messaging-ktx:23.1.2")
     implementation(libs.play.services.maps)
+    implementation("com.google.firebase:firebase-database:20.1.0") // Replace with the latest version
     implementation("com.google.android.gms:play-services-location:21.0.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

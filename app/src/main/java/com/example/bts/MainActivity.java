@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Authentication successful.",
                                     Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
+                            intent.putExtra("userRole", "user");
+                            intent.putExtra("userId", user.getUid());
                             startActivity(intent);
                         } else {
                             Toast.makeText(MainActivity.this, "Authentication failed.",
