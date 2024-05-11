@@ -4,7 +4,7 @@
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#616161"
+    android:background="@drawable/gradient"
     tools:context=".MainActivity">
 
     <!-- Login UI -->
@@ -26,7 +26,9 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="20dp"
         android:hint="Email"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
     <EditText
         android:id="@+id/editTextPassword"
@@ -37,7 +39,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
 
     <TextView
@@ -48,7 +52,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="Forgot Password?"
-        android:textColor="@android:color/darker_gray" />
+        android:textColor="@android:color/darker_gray"
+        android:layout_centerVertical="true" />
 
     <Button
         android:id="@+id/buttonLogin"
@@ -58,7 +63,9 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        android:text="Login" />
+        android:text="Login"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/textView"
@@ -66,14 +73,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:layout_marginEnd="75dp"
         android:layout_marginBottom="25dp"
         android:text="BAIG TRANSPORT SYSTEM"
         android:fontFamily="@font/ebt"
         android:textColor="#F1F8E9"
         android:textSize="18sp"
-        android:textStyle="italic|bold" />
+        android:textStyle="italic|bold"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
     <Button
         android:id="@+id/buttonRegister"
@@ -81,9 +89,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="166dp"
+        android:layout_marginEnd="145dp"
         android:layout_marginBottom="156dp"
-        android:text="Register" />
+        android:text="Register"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
 
 </RelativeLayout>

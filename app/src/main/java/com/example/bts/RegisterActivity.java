@@ -58,6 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                             // Create UserModel object with user details
                             UserModel userModel = new UserModel(name, Timestamp.now(), user.getUid());
+                            userModel.setType("user");
 
                             // Access Firestore instance
                             FirebaseFirestore db = FirebaseFirestore.getInstance();

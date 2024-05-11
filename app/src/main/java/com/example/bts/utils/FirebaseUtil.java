@@ -17,6 +17,7 @@ public class FirebaseUtil {
         return FirebaseAuth.getInstance().getUid();
     }
 
+
     public static boolean isLoggedIn(){
         if(currentUserId()!=null){
             return true;
@@ -27,6 +28,10 @@ public class FirebaseUtil {
     public static DocumentReference currentUserDetails(){
         return FirebaseFirestore.getInstance().collection("users").document(currentUserId());
     }
+    public static DocumentReference currentDriverDetails(){
+        return FirebaseFirestore.getInstance().collection("drivers").document(currentUserId());
+    }
+
 
     public static CollectionReference allUserCollectionReference(){
         return FirebaseFirestore.getInstance().collection("users");

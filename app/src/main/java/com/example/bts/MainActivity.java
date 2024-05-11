@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,17 @@ public class MainActivity extends AppCompatActivity {
                 loginUser(email, password);
             }
         });
+        TextView forgotPasswordTextView = findViewById(R.id.textViewForgotPassword);
+        forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle the "Forgot Password" functionality here
+                // For example, you can navigate to a ForgotPasswordActivity
+                Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override

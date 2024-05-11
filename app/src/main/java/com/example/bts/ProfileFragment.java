@@ -37,7 +37,6 @@ public class ProfileFragment extends Fragment {
 
     ImageView profilePic;
     EditText usernameInput;
-    EditText phoneInput;
     Button updateProfileBtn;
     ProgressBar progressBar;
     TextView logoutBtn;
@@ -46,6 +45,9 @@ public class ProfileFragment extends Fragment {
     ActivityResultLauncher<Intent> imagePickLauncher;
     Uri selectedImageUri;
 
+    String userRole;
+    String userId;
+
     public ProfileFragment() {
 
     }
@@ -53,6 +55,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            userRole = bundle.getString("userRole");
+            userId = bundle.getString("userId");
+        }
         imagePickLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if(result.getResultCode() == Activity.RESULT_OK){
@@ -74,9 +81,19 @@ public class ProfileFragment extends Fragment {
         usernameInput = view.findViewById(R.id.profile_username);
         updateProfileBtn = view.findViewById(R.id.profile_update_btn);
         progressBar = view.findViewById(R.id.profile_progress_bar);
+
         logoutBtn = view.findViewById(R.id.logout_btn);
 
-        getUserData();
+        if (userRole != null && userRole.equals("driver")) {
+            // User is a driver
+            // Perform actions specific to drivers
+            getDriverData();
+        } else {
+            // User is a regular user
+            // Perform actions specific to regular users
+            getUserData();
+        }
+
 
         updateProfileBtn.setOnClickListener((v -> {
             updateBtnClick();
@@ -139,6 +156,18 @@ public class ProfileFragment extends Fragment {
     }
 
     void updateToFirestore(){
+        if(userRole.equals("driver")){
+            FirebaseUtil.currentDriverDetails().set(currentUserModel)
+                    .addOnCompleteListener(task -> {
+                        setInProgress(false);
+                        if(task.isSuccessful()){
+                            AndroidUtil.showToast(getContext(),"Updated successfully");
+                        }else{
+                            AndroidUtil.showToast(getContext(),"Updated failed");
+                        }
+                    });
+            return;
+        }
         FirebaseUtil.currentUserDetails().set(currentUserModel)
                 .addOnCompleteListener(task -> {
                     setInProgress(false);
@@ -169,6 +198,25 @@ public class ProfileFragment extends Fragment {
             usernameInput.setText(currentUserModel.getUsername());
 
         });
+    }
+    void getDriverData(){
+        setInProgress(true);
+
+        FirebaseUtil.getCurrentProfilePicStorageRef().getDownloadUrl()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()){
+                        Uri uri  = task.getResult();
+                        AndroidUtil.setProfilePic(getContext(),uri,profilePic);
+                    }
+                });
+
+        FirebaseUtil.currentDriverDetails().get().addOnCompleteListener(task -> {
+            setInProgress(false);
+            currentUserModel = task.getResult().toObject(UserModel.class);
+            usernameInput.setText(currentUserModel.getUsername());
+
+        });
+
     }
 
 

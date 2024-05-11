@@ -25,6 +25,10 @@ public class chatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Intent intent = getIntent();
+        String userRole = intent.getStringExtra("userRole");
+        String userId = intent.getStringExtra("userId");
+
 
         chatFragment = new ChatFragment();
         profileFragment = new ProfileFragment();
@@ -43,18 +47,30 @@ public class chatActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout,chatFragment).commit();
                 }
                 if(item.getItemId()==R.id.menu_profile){
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout,profileFragment).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("userRole", userRole); // Pass the user role
+                    bundle.putString("userId", userId); // Pass the user ID
+
+                    profileFragment.setArguments(bundle); // Set arguments to the fragment
+
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout, profileFragment).commit();
                 }
+
                 return true;
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.menu_chat);
 
-        getFCMToken();
+        if(userRole.equals("driver")){
+            getDriverFCMToken();
+        }
+        else{
+            getUserFCMToken();
+        }
 
     }
 
-    void getFCMToken(){
+    void getUserFCMToken(){
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 String token = task.getResult();
@@ -63,4 +79,14 @@ public class chatActivity extends AppCompatActivity {
             }
         });
     }
+    void getDriverFCMToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                String token = task.getResult();
+                FirebaseUtil.currentDriverDetails().update("fcmToken",token);
+
+            }
+        });
+    }
+
 }

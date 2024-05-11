@@ -6,6 +6,9 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bts.feedback.Feedback;
+import com.example.bts.fees.FeePayment;
+
 public class HomePageActivity extends AppCompatActivity {
 
     private String userRole;
@@ -24,6 +27,8 @@ public class HomePageActivity extends AppCompatActivity {
         // Retrieve references to the chat and map buttons
         Button chatButton = findViewById(R.id.chat_button);
         Button mapButton = findViewById(R.id.map_button);
+        Button feedback_button = findViewById(R.id.feedback);
+        Button fee_button = findViewById(R.id.Fees);
 
         // Set onClickListener for the chat button
         chatButton.setOnClickListener(v -> {
@@ -34,7 +39,14 @@ public class HomePageActivity extends AppCompatActivity {
             chatIntent.putExtra("userId", userId);
             startActivity(chatIntent);
         });
-
+        fee_button.setOnClickListener(v -> {
+            // Start `FeePayment` when the fee button is clicked
+            Intent feeIntent = new Intent(HomePageActivity.this, FeePayment.class);
+            // Pass `userRole` and `userId` to `FeePayment`
+            feeIntent.putExtra("userRole", userRole);
+            feeIntent.putExtra("userId", userId);
+            startActivity(feeIntent);
+        });
         // Set onClickListener for the map button
         mapButton.setOnClickListener(v -> {
             // Start `MapsActivity` when the map button is clicked
@@ -43,6 +55,15 @@ public class HomePageActivity extends AppCompatActivity {
             mapIntent.putExtra("userRole", userRole);
             mapIntent.putExtra("userId", userId);
             startActivity(mapIntent);
+        });
+
+        feedback_button.setOnClickListener(v -> {
+            // Start `Feedback` when the feedback button is clicked
+            Intent feedbackIntent = new Intent(HomePageActivity.this, Feedback.class);
+            // Pass `userRole` and `userId` to `Feedback`
+            feedbackIntent.putExtra("userRole", userRole);
+            feedbackIntent.putExtra("userId", userId);
+            startActivity(feedbackIntent);
         });
     }
 }
