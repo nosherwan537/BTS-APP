@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.Authentication;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bts.R;
 import com.example.bts.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class RegisterActivity extends AppCompatActivity {
+public class DriverRegister extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
@@ -58,19 +59,19 @@ public class RegisterActivity extends AppCompatActivity {
 
                             // Create UserModel object with user details
                             UserModel userModel = new UserModel(name, Timestamp.now(), user.getUid());
-                            userModel.setType("user");
+                            userModel.setType("driver");
 
                             // Access Firestore instance
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
                             // Add user to "users" collection
-                            db.collection("users")
+                            db.collection("drivers")
                                     .document(user.getUid())
                                     .set(userModel)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(RegisterActivity.this, "Registration Successful",
+                                            Toast.makeText(DriverRegister.this, "Registration Successful",
                                                     Toast.LENGTH_SHORT).show();
                                             clearFields();
                                         }
@@ -78,12 +79,12 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(RegisterActivity.this, "Registration failed. Please try again.",
+                                            Toast.makeText(DriverRegister.this, "Registration failed. Please try again.",
                                                     Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Registration failed. Please try again.",
+                            Toast.makeText(DriverRegister.this, "Registration failed. Please try again.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }

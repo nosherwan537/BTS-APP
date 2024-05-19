@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.Authentication;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,15 +11,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bts.HomePageActivity;
+import com.example.bts.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity {
+public class DriverLoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,60 +32,78 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         EditText editTextEmail = findViewById(R.id.editTextEmail);
         EditText editTextPassword = findViewById(R.id.editTextPassword);
         Button loginButton = findViewById(R.id.buttonLogin);
         Button registerButton = findViewById(R.id.buttonRegister);
+        TextView forgotPasswordTextView=findViewById(R.id.textViewForgotPassword);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = editTextEmail.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
-                loginUser(email, password);
+                loginDriver(email, password);
             }
         });
-        TextView forgotPasswordTextView = findViewById(R.id.textViewForgotPassword);
         forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Handle the "Forgot Password" functionality here
                 // For example, you can navigate to a ForgotPasswordActivity
-                Intent intent = new Intent(MainActivity.this, ForgotPasswordActivity.class);
+                Intent intent = new Intent(DriverLoginActivity.this, ForgotPasswordActivity.class);
                 startActivity(intent);
             }
         });
-
-
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                Intent intent = new Intent(DriverLoginActivity.this, DriverRegister.class);
                 startActivity(intent);
             }
         });
     }
 
-    private void loginUser(String email, String password) {
+    private void loginDriver(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(MainActivity.this, "Authentication successful.",
+                            verifyDriver(user.getUid());
+                        } else {
+                            Toast.makeText(DriverLoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, HomePageActivity.class);
-                            intent.putExtra("userRole", "user");
-                            intent.putExtra("userId", user.getUid());
+                        }
+                    }
+                });
+
+
+    }
+
+    private void verifyDriver(String uid) {
+        // Check if the authenticated user exists in the drivers' collection
+        db.collection("drivers").document(uid).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                            // Driver exists in the "drivers" collection
+                            Toast.makeText(DriverLoginActivity.this, "Authentication successful.",
+                                    Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(DriverLoginActivity.this, HomePageActivity.class);
+                            intent.putExtra("userRole", "driver");
+                            intent.putExtra("userId", uid);
                             startActivity(intent);
                         } else {
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                            // User does not exist in the "drivers" collection
+                            Toast.makeText(DriverLoginActivity.this, "Not a registered driver.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
-
 }

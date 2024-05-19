@@ -3,8 +3,6 @@
     <string-array name="payment_methods">
         <item>EasyPaisa</item>
         <item>JazzCash</item>
-        <item>Bank Transfer</item>
-        <item>PayPal</item>
         <item>PayPro</item>
         <!-- Add more payment methods if needed -->
     </string-array>

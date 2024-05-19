@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.bts.R;
@@ -15,6 +16,7 @@ public class FeePayment extends AppCompatActivity {
 
     String userRole;
     String userId;
+    String selectedPaymentMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,19 @@ public class FeePayment extends AppCompatActivity {
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
 
+        // Set item selected listener for the spinner
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedPaymentMethod = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle case where no item is selected if necessary
+            }
+        });
+
         // Get reference to the "Pay" button
         Button payButton = findViewById(R.id.SubmitFee);
 
@@ -46,25 +61,38 @@ public class FeePayment extends AppCompatActivity {
         payButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Perform action to redirect to EasyPaisa
-                redirectToJazzCash();
+                // Perform action based on the selected payment method
+                if (selectedPaymentMethod.equals("EasyPaisa")) {
+                    redirectToEasyPaisa();
+                } else if (selectedPaymentMethod.equals("JazzCash")) {
+                    redirectToJazzCash();
+                } else if (selectedPaymentMethod.equals("PayPro")) {
+                    redirectToPayPro();
+                } else {
+                    Toast.makeText(FeePayment.this, "Please select a valid payment method", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
     // Method to redirect to EasyPaisa app
-    private void redirectToJazzCash() {
-        String jazzCashPackageName = "com.jazzcash.jazzcash";
-        String jazzCashUrl = "https://www.jazzcash.com.pk/";
+    private void redirectToEasyPaisa() {
+        String easyPaisaUrl = "https://easypaisa.com.pk/";
+        Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(easyPaisaUrl));
+        startActivity(webIntent);
+    }
 
-        Intent jazzCashIntent = getPackageManager().getLaunchIntentForPackage(jazzCashPackageName);
-        if (jazzCashIntent != null) {
-            // JazzCash app is installed, so open it
-            startActivity(jazzCashIntent);
-        } else {
-            // JazzCash app is not installed, open JazzCash website
-            Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(jazzCashUrl));
-            startActivity(webIntent);
-        }
+    // Method to redirect to JazzCash app
+    private void redirectToJazzCash() {
+        String jazzCashUrl = "https://www.jazzcash.com.pk/";
+        Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(jazzCashUrl));
+        startActivity(webIntent);
+    }
+
+    // Method to redirect to PayPro app
+    private void redirectToPayPro() {
+        String payProUrl = "https://paypro.com.pk/e-commerce/?utm_term=&utm_campaign=Generate-Traffic-Campaign&utm_source=adwords&utm_medium=ppc&hsa_acc=4895178007&hsa_cam=12349262536&hsa_grp=127582426696&hsa_ad=545930476727&hsa_src=g&hsa_tgt=dsa-1420612970129&hsa_kw=&hsa_mt=&hsa_net=adwords&hsa_ver=3&gad_source=1&gclid=CjwKCAjwupGyBhBBEiwA0UcqaAsupePIgfV9o7DuvievNKdrcDdwmIovJ9xsYSoGgg6Qjq1L_u2PxRoCC6sQAvD_BwE";
+        Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(payProUrl));
+        startActivity(webIntent);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.ChatModule;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 

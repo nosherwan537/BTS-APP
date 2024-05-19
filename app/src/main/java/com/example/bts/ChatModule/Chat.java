@@ -1,5 +1,5 @@
 
-package com.example.bts;
+package com.example.bts.ChatModule;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.bts.R;
 import com.example.bts.adapter.ChatRecyclerAdapter;
 import com.example.bts.adapter.SearchUserRecyclerAdapter;
 import com.example.bts.model.ChatMessageModel;

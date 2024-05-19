@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.ChatModule;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,15 +20,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.bts.Authentication.MainActivity;
+import com.example.bts.R;
 import com.example.bts.model.UserModel;
 import com.example.bts.utils.AndroidUtil;
 import com.example.bts.utils.FirebaseUtil;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.storage.UploadTask;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -105,7 +105,7 @@ public class ProfileFragment extends Fragment {
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
                         FirebaseUtil.logout();
-                        Intent intent = new Intent(getContext(),MainActivity.class);
+                        Intent intent = new Intent(getContext(), MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }

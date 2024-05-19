@@ -30,7 +30,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
         <activity
-            android:name=".Role"
+            android:name=".Authentication.Role"
 
             android:screenOrientation="portrait"
             android:exported="true">
@@ -42,21 +42,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chatActivity"
+            android:name=".ChatModule.chatActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".Chat"
+            android:name=".ChatModule.Chat"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".SearchUserActivity"
+            android:name=".ChatModule.SearchUserActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -64,16 +64,16 @@
         </activity>
         <!-- Add the HomePageActivity to the manifest -->
         <activity android:name=".HomePageActivity" />
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".Authentication.RegisterActivity" />
         <activity android:name=".MapsActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Authentication.MainActivity" />
         <activity android:name=".feedback.Feedback" />
-        <activity android:name=".DriverRegister" />
+        <activity android:name=".Authentication.DriverRegister" />
 
-        <activity android:name=".DriverLoginActivity" />
+        <activity android:name=".Authentication.DriverLoginActivity" />
         <activity android:name=".fees.FeePayment" />
-        <activity android:name=".ForgotPasswordActivity" />" />
-        <service android:name=".FCMNotificationService" android:exported="false">
+        <activity android:name=".Authentication.ForgotPasswordActivity" />" />
+        <service android:name=".ChatModule.FCMNotificationService" android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>

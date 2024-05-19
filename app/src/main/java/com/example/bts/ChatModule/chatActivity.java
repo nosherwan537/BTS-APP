@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.ChatModule;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageButton;
 
+import com.example.bts.R;
 import com.example.bts.utils.FirebaseUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;

@@ -12,8 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.bts.Chat;
-import com.example.bts.chatActivity;
+import com.example.bts.ChatModule.Chat;
 import com.example.bts.R;
 import com.example.bts.model.UserModel;
 import com.example.bts.utils.AndroidUtil;

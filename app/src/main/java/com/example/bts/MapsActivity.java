@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.bts.model.LocationData;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -122,25 +123,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
     // Method to update map and store the location in Firebase
     private void updateMapAndDatabase(LatLng currentLocation) {
         mMap.clear(); // Clear previous markers
+
+        // Create LocationData object
+        LocationData locationData = new LocationData(currentLocation.latitude, currentLocation.longitude);
 
         // Set marker based on user role
         String title;
         if (userRole.equals("driver")) {
             title = "Driver's Location";
-            driverRef.child(userId).child("location").setValue(currentLocation);
+            driverRef.child(userId).child("location").setValue(locationData);
         } else {
             title = "User's Location";
-            userRef.child(userId).child("location").setValue(currentLocation);
+            userRef.child(userId).child("location").setValue(locationData);
         }
 
         // Add marker to the map
         mMap.addMarker(new MarkerOptions().position(currentLocation).title(title));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
     }
+
 
     // Fetch and display each other's location
     private void fetchAndDisplayLocations() {
@@ -150,8 +154,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        LatLng userLocation = snapshot.child("location").getValue(LatLng.class);
-                        if (userLocation != null) {
+                        LocationData userLocationData = snapshot.child("location").getValue(LocationData.class);
+                        if (userLocationData != null) {
+                            LatLng userLocation = new LatLng(userLocationData.getLatitude(), userLocationData.getLongitude());
                             updateUserLocationOnMap(userLocation);
                         }
                     }
@@ -168,8 +173,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        LatLng driverLocation = snapshot.child("location").getValue(LatLng.class);
-                        if (driverLocation != null) {
+                        LocationData driverLocationData = snapshot.child("location").getValue(LocationData.class);
+                        if (driverLocationData != null) {
+                            LatLng driverLocation = new LatLng(driverLocationData.getLatitude(), driverLocationData.getLongitude());
                             updateDriverLocationOnMap(driverLocation);
                         }
                     }
@@ -182,6 +188,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         }
     }
+
 
 
     private void updateUserLocationOnMap(LatLng userLocation) {

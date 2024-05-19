@@ -1,5 +1,5 @@
 
-package com.example.bts;
+package com.example.bts.ChatModule;
 
 import android.os.Bundle;
 

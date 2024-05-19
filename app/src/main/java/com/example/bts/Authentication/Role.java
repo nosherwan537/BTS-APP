@@ -1,4 +1,4 @@
-package com.example.bts;
+package com.example.bts.Authentication;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,8 +7,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bts.R;
 
 public class Role extends AppCompatActivity {
 

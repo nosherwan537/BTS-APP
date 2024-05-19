@@ -6,6 +6,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bts.ChatModule.chatActivity;
 import com.example.bts.feedback.Feedback;
 import com.example.bts.fees.FeePayment;
 
