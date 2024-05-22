@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bts.ChatModule.chatActivity;
+import com.example.bts.HomePageActivity;
 import com.example.bts.R;
+import com.example.bts.fees.FeePayment;
 import com.example.bts.model.FeedBackModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,8 +36,39 @@ public class Feedback extends AppCompatActivity {
 
         feedbackEditText = findViewById(R.id.editText);
         submitButton = findViewById(R.id.feedback_button);
+        setupBottomAppBar(userRole, userId);
 
         submitButton.setOnClickListener(view -> submitFeedback());
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, HomePageActivity.class);
+        intent.putExtra("userRole", userRole);
+        intent.putExtra("userId", userId);
+        startActivity(intent);
+        finish();
+    }
+
+    private void setupBottomAppBar(String userRole, String userId) {
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        LinearLayout feeLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView11).getParent();
+        LinearLayout chatLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView14).getParent();
+
+        feeLayout.setOnClickListener(v -> {
+            // Handle fee layout click
+            Intent intent = new Intent(Feedback.this, FeePayment.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+        chatLayout.setOnClickListener(v -> {
+            // Handle chat layout click
+            Intent intent = new Intent(Feedback.this, chatActivity.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
     }
 
     private void submitFeedback() {

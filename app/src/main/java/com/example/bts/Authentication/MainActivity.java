@@ -63,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, Role.class);
+        startActivity(intent);
+        finish();
+    }
 
     private void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)

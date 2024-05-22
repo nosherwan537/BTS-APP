@@ -32,7 +32,7 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_chat, container, false);
-        recyclerView = view.findViewById(R.id.recyler_view);
+        recyclerView = view.findViewById(R.id.recycler_view);
         setupRecyclerView();
 
         return view;

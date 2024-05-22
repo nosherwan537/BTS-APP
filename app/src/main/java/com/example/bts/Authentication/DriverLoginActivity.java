@@ -83,6 +83,12 @@ public class DriverLoginActivity extends AppCompatActivity {
 
 
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, Role.class);
+        startActivity(intent);
+        finish();
+    }
 
     private void verifyDriver(String uid) {
         // Check if the authenticated user exists in the drivers' collection

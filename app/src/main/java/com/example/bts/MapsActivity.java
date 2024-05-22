@@ -34,6 +34,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -44,36 +46,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DatabaseReference driverRef;
     private LocationCallback locationCallback;
 
-    // Assume userRole is either "driver" or "user" based on the signup or login process
     private String userRole;
-    private String userId; // Assume you have the userId available
+    private String userId;
+    private List<String> assignedUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
 
-        // Retrieve userRole and userId from the Intent
         Intent intent = getIntent();
         userRole = intent.getStringExtra("userRole");
         userId = intent.getStringExtra("userId");
         Log.d("MapsActivity", "userRole: " + userRole);
         Log.d("MapsActivity", "userId: " + userId);
 
-        // Initialize Firebase Database references
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         userRef = database.getReference("users");
         driverRef = database.getReference("drivers");
 
-        // Initialize Google Maps
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Initialize FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Set up location callback
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -81,94 +78,94 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    // Handle the location update
                     LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                     updateMapAndDatabase(currentLocation);
                 }
             }
         };
 
-        // Request location permissions
         requestLocationPermissions();
     }
-
 
     private void requestLocationPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         } else {
-            // Permission already granted
             startLocationUpdates();
         }
     }
 
     private void startLocationUpdates() {
-        // Check if location permissions are granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            // Create a LocationRequest using the builder
-            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10 * 1000) // 10 seconds in milliseconds
-                    .setMinUpdateIntervalMillis(5 * 1000) // 5 seconds in milliseconds
+            LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10 * 1000)
+                    .setMinUpdateIntervalMillis(5 * 1000)
                     .build();
 
-            // Initialize the FusedLocationProviderClient
-            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            // Request location updates
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         } else {
-            // Request location permissions
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE);
         }
     }
 
-    // Method to update map and store the location in Firebase
     private void updateMapAndDatabase(LatLng currentLocation) {
-        mMap.clear(); // Clear previous markers
+        mMap.clear();
 
-        // Create LocationData object
         LocationData locationData = new LocationData(currentLocation.latitude, currentLocation.longitude);
 
-        // Set marker based on user role
-        String title;
         if (userRole.equals("driver")) {
-            title = "Driver's Location";
             driverRef.child(userId).child("location").setValue(locationData);
         } else {
-            title = "User's Location";
             userRef.child(userId).child("location").setValue(locationData);
         }
 
-        // Add marker to the map
+        String title = userRole.equals("driver") ? "Driver's Location" : "User's Location";
         mMap.addMarker(new MarkerOptions().position(currentLocation).title(title));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
     }
 
-
-    // Fetch and display each other's location
     private void fetchAndDisplayLocations() {
         if (userRole.equals("driver")) {
-            // If the user is a driver, listen for the user's (passenger's) location
-            userRef.addValueEventListener(new ValueEventListener() {
+            driverRef.child(userId).child("assignedUsers").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        LocationData userLocationData = snapshot.child("location").getValue(LocationData.class);
-                        if (userLocationData != null) {
-                            LatLng userLocation = new LatLng(userLocationData.getLatitude(), userLocationData.getLongitude());
-                            updateUserLocationOnMap(userLocation);
+
+                    if (dataSnapshot.exists()) {
+                        assignedUsers = new ArrayList<>();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            assignedUsers.add(snapshot.getValue(String.class));
                         }
+                        Log.d("MapsActivity", "Assigned users: " + assignedUsers.toString());
+
+                        for (String userId : assignedUsers) {
+                            userRef.child(userId).child("location").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    LocationData userLocationData = snapshot.getValue(LocationData.class);
+                                    if (userLocationData != null) {
+                                        LatLng userLocation = new LatLng(userLocationData.getLatitude(), userLocationData.getLongitude());
+                                        updateUserLocationOnMap(userLocation);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Toast.makeText(MapsActivity.this, "Failed to fetch user location", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    } else {
+                        Log.d("MapsActivity", "No assigned users found");
                     }
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(MapsActivity.this, "Failed to fetch user location", Toast.LENGTH_SHORT).show();
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MapsActivity.this, "Failed to fetch assigned users", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            // If the user is a passenger, listen for the driver's location
             driverRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -182,14 +179,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(MapsActivity.this, "Failed to fetch driver location", Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
-
-
 
     private void updateUserLocationOnMap(LatLng userLocation) {
         mMap.addMarker(new MarkerOptions().position(userLocation)
@@ -207,32 +202,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Enable location layer if permissions are granted
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
 
-        // Fetch and display each other's location
         fetchAndDisplayLocations();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Remove location updates when the activity is destroyed
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
-    // Handle permissions request response
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
                 startLocationUpdates();
             } else {
-                // Permission denied
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }

@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/gradient"
+        android:background="@drawable/gradient2"
         android:padding="10dp"
         android:id="@+id/toolbar">
 
@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:text="Username"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textStyle=""
+            android:textColor="@color/off_white"
             android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/profile_pic_layout"

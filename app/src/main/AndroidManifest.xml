@@ -6,6 +6,7 @@
     <!-- Add INTERNET permission -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
@@ -30,7 +31,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
         <activity
-            android:name=".Authentication.Role"
+            android:name=".SplashActivity"
 
             android:screenOrientation="portrait"
             android:exported="true">
@@ -64,11 +65,13 @@
         </activity>
         <!-- Add the HomePageActivity to the manifest -->
         <activity android:name=".HomePageActivity" />
+        <activity android:name=".Authentication.Role" />
         <activity android:name=".Authentication.RegisterActivity" />
         <activity android:name=".MapsActivity" />
         <activity android:name=".Authentication.MainActivity" />
         <activity android:name=".feedback.Feedback" />
         <activity android:name=".Authentication.DriverRegister" />
+        <activity android:name=".UserLocationActivity" />
 
         <activity android:name=".Authentication.DriverLoginActivity" />
         <activity android:name=".fees.FeePayment" />

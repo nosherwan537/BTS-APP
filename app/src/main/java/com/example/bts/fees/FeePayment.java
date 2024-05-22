@@ -7,10 +7,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.bts.ChatModule.chatActivity;
+import com.example.bts.HomePageActivity;
 import com.example.bts.R;
+import com.example.bts.feedback.Feedback;
 
 public class FeePayment extends AppCompatActivity {
 
@@ -30,6 +35,7 @@ public class FeePayment extends AppCompatActivity {
 
         // Initialize the spinner
         Spinner spinner = findViewById(R.id.FeeMethods);
+
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -73,7 +79,39 @@ public class FeePayment extends AppCompatActivity {
                 }
             }
         });
+        setupBottomAppBar(userRole, userId);
     }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, HomePageActivity.class);
+        intent.putExtra("userRole", userRole);
+        intent.putExtra("userId", userId);
+        startActivity(intent);
+        finish();
+    }
+
+
+    private void setupBottomAppBar(String userRole, String userId) {
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        LinearLayout feedbackLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView15).getParent();
+        LinearLayout chatLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView14).getParent();
+        chatLayout.setOnClickListener(v -> {
+            // Handle chat layout click
+            Intent intent = new Intent(FeePayment.this, chatActivity.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+        feedbackLayout.setOnClickListener(v -> {
+            // Handle feedback layout click
+            Intent intent = new Intent(FeePayment.this, Feedback.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
+    }
+
 
     // Method to redirect to EasyPaisa app
     private void redirectToEasyPaisa() {

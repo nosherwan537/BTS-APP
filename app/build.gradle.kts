@@ -62,6 +62,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("com.hbb20:ccp:2.5.0")
+    implementation("com.google.android.gms:play-services-base:18.1.0")
 
     implementation(platform("com.google.firebase:firebase-bom:31.3.0"))
     implementation("com.google.firebase:firebase-auth")

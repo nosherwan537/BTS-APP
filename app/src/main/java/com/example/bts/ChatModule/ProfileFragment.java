@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.bts.Authentication.MainActivity;
+import com.example.bts.HomePageActivity;
 import com.example.bts.R;
 import com.example.bts.model.UserModel;
 import com.example.bts.utils.AndroidUtil;
@@ -72,6 +73,8 @@ public class ProfileFragment extends Fragment {
                 }
         );
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

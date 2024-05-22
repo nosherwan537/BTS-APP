@@ -2,92 +2,112 @@ package com.example.bts.ChatModule;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.example.bts.HomePageActivity;
 import com.example.bts.R;
+import com.example.bts.feedback.Feedback;
+import com.example.bts.fees.FeePayment;
 import com.example.bts.utils.FirebaseUtil;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class chatActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
     ImageButton searchButton;
 
     ChatFragment chatFragment;
-    ProfileFragment profileFragment;
+    String userRole;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        userRole = intent.getStringExtra("userRole");
+        userId = intent.getStringExtra("userId");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Intent intent = getIntent();
-        String userRole = intent.getStringExtra("userRole");
-        String userId = intent.getStringExtra("userId");
 
 
         chatFragment = new ChatFragment();
-        profileFragment = new ProfileFragment();
-
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
         searchButton = findViewById(R.id.main_search_btn);
 
-        searchButton.setOnClickListener((v)->{
+        searchButton.setOnClickListener((v) -> {
             startActivity(new Intent(chatActivity.this, SearchUserActivity.class));
         });
 
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId()==R.id.menu_chat){
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout,chatFragment).commit();
-                }
-                if(item.getItemId()==R.id.menu_profile){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("userRole", userRole); // Pass the user role
-                    bundle.putString("userId", userId); // Pass the user ID
+        setupBottomAppBar(userRole, userId);
 
-                    profileFragment.setArguments(bundle); // Set arguments to the fragment
-
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout, profileFragment).commit();
-                }
-
-                return true;
-            }
-        });
-        bottomNavigationView.setSelectedItemId(R.id.menu_chat);
-
-        if(userRole.equals("driver")){
+        if (userRole.equals("driver")) {
             getDriverFCMToken();
-        }
-        else{
+        } else {
             getUserFCMToken();
         }
 
+        // Initially display the chat fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout, chatFragment).commit();
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, HomePageActivity.class);
+        intent.putExtra("userRole", userRole);
+        intent.putExtra("userId", userId);
+        startActivity(intent);
+        finish();
     }
 
-    void getUserFCMToken(){
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                String token = task.getResult();
-                FirebaseUtil.currentUserDetails().update("fcmToken",token);
 
+
+    private void setupBottomAppBar(String userRole, String userId) {
+        LinearLayout linearLayout = findViewById(R.id.linearLayout);
+        LinearLayout feeLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView11).getParent();
+        LinearLayout chatLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView14).getParent();
+        LinearLayout feedbackLayout = (LinearLayout) linearLayout.findViewById(R.id.imageView15).getParent();
+
+        feeLayout.setOnClickListener(v -> {
+            // Handle fee layout click
+            Intent intent = new Intent(chatActivity.this, FeePayment.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+        chatLayout.setOnClickListener(v -> {
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_frame_layout, chatFragment).commit();
+        });
+
+        feedbackLayout.setOnClickListener(v -> {
+            // Handle feedback layout click
+            Intent intent = new Intent(chatActivity.this, Feedback.class);
+            intent.putExtra("userRole", userRole);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+    }
+
+    void getUserFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult();
+                FirebaseUtil.currentUserDetails().update("fcmToken", token);
             }
         });
     }
-    void getDriverFCMToken(){
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                String token = task.getResult();
-                FirebaseUtil.currentDriverDetails().update("fcmToken",token);
 
+    void getDriverFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult();
+                FirebaseUtil.currentDriverDetails().update("fcmToken", token);
             }
         });
     }
-
 }
