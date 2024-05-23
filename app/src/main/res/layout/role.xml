@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:padding="12dp"
-        android:text="Button"
+        android:text="SELECT"
         android:textColor="@android:color/white"
         android:background="@drawable/background_oval"
         app:layout_constraintBottom_toBottomOf="parent"

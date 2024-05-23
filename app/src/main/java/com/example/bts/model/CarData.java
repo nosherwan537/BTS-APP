@@ -1,6 +1,6 @@
 package com.example.bts.model;
 
-public class CarData {
+public abstract class CarData {
     private String color;
     private String name;
     private String number;
@@ -16,13 +16,14 @@ public class CarData {
     }
 
     // Getters and setters for car attributes
-    public String getColor() {
+    public  String getColor() {
         return color;
     }
 
     public void setColor(String color) {
         this.color = color;
     }
+    public abstract void Passengers (int passengers);
 
     public String getName() {
         return name;

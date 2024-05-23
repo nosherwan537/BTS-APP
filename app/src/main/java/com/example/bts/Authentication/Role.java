@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.bts.R;
 
-public class Role extends AppCompatActivity {
+public  class Role extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
