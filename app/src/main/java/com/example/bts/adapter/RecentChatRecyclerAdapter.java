@@ -3,6 +3,7 @@ package com.example.bts.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,39 +33,66 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
 
     @Override
     protected void onBindViewHolder(@NonNull ChatroomModelViewHolder holder, int position, @NonNull ChatroomModel model) {
-        FirebaseUtil.getOtherUserFromChatroom(model.getUserIds())
-                .get().addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
+        try {
+            FirebaseUtil.getOtherUserFromChatroom(model.getUserIds())
+                    .get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            UserModel otherUserModel = task.getResult().toObject(UserModel.class);
 
+                            if (otherUserModel != null) {
+                                boolean lastMessageSentByMe = model.getLastMessageSenderId().equals(FirebaseUtil.currentUserId());
 
-                        UserModel otherUserModel = task.getResult().toObject(UserModel.class);
+                                // Ensure otherUserModel.getUserId() is not null
+                                String otherUserId = otherUserModel.getUserId();
+                                if (otherUserId != null) {
+                                    FirebaseUtil.getOtherProfilePicStorageRef(otherUserId).getDownloadUrl()
+                                            .addOnCompleteListener(t -> {
+                                                if (t.isSuccessful()) {
+                                                    Uri uri = t.getResult();
+                                                    AndroidUtil.setProfilePic(context, uri, holder.profilePic);
+                                                } else {
+                                                    Log.e("RecentChatAdapter", "Failed to get profile picture URL", t.getException());
+                                                }
+                                            });
 
-                        FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
-                                .addOnCompleteListener(t -> {
-                                    if(t.isSuccessful()){
-                                        Uri uri= t.getResult();
-                                        AndroidUtil.setProfilePic(context,uri,holder.profilePic);
-                                    }
-                                });
+                                    holder.usernameText.setText(otherUserModel.getUsername());
+                                    if (lastMessageSentByMe)
+                                        holder.lastMessageText.setText("You : " + model.getLastMessage());
+                                    else
+                                        holder.lastMessageText.setText(model.getLastMessage());
+                                    holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
 
-                        holder.usernameText.setText(otherUserModel.getUsername());
-                        if(lastMessageSentByMe)
-                            holder.lastMessageText.setText("You : "+model.getLastMessage());
-                        else
-                            holder.lastMessageText.setText(model.getLastMessage());
-                        holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
-
-                        holder.itemView.setOnClickListener(v -> {
-                            //navigate to chat activity
-                            Intent intent = new Intent(context, Chat.class);
-                            AndroidUtil.passUserModelAsIntent(intent,otherUserModel);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
-                        });
-
-                    }
-                });
+                                    holder.itemView.setOnClickListener(v -> {
+                                        // Navigate to chat activity
+                                        Intent intent = new Intent(context, Chat.class);
+                                        AndroidUtil.passUserModelAsIntent(intent, otherUserModel);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent);
+                                    });
+                                } else {
+                                    Log.e("RecentChatAdapter", "otherUserModel.getUserId() is null");
+                                    setDefaultView(holder);
+                                }
+                            } else {
+                                Log.e("RecentChatAdapter", "otherUserModel is null");
+                                setDefaultView(holder);
+                            }
+                        } else {
+                            Log.e("RecentChatAdapter", "Failed to get other user: ", task.getException());
+                            setDefaultView(holder);
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("RecentChatAdapter", "Error binding view holder", e);
+            // Handle the error gracefully, possibly hiding the view or showing a default state
+            setDefaultView(holder);
+        }
+    }
+    private void setDefaultView(ChatroomModelViewHolder holder) {
+        holder.usernameText.setText(R.string.default_name);
+        holder.lastMessageText.setText(R.string.default_message);
+        holder.lastMessageTime.setText("");
+        holder.profilePic.setImageResource(R.drawable.person_icon);
     }
 
     @NonNull
